@@ -4,7 +4,7 @@ function App() {
   const [tasks, setTasks] = useState([]);
   const [newTitle, setNewTitle] = useState('');
 
-  // 1. READ logic: Fetch tasks immediately when the web page loads
+  // 1. READ logic: Fetch tasks immediately when the web page load
   useEffect(() => {
     fetch('http://localhost:5000/api/tasks')
       .then((res) => res.json())
@@ -31,6 +31,19 @@ function App() {
       console.error("Error creating record:", error);
     }
   };
+
+    // 3. DELETE logic: Send ID to Flask to remove from database
+    const handleDeleteTask = async (id) => {
+      try {
+        await fetch(`http://localhost:5000/api/tasks/${id}`, {
+          method: 'DELETE',
+        });
+        // Update the React interface instantly by filtering out the deleted ID
+        setTasks(tasks.filter((task) => task.id !== id));
+      } catch (error) {
+        console.error("Error deleting record:", error);
+      }
+    }; 
 
   return (
     <div style={{ maxWidth: '600px', margin: '40px auto', fontFamily: 'sans-serif', padding: '20px' }}>
