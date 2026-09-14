@@ -1,5 +1,4 @@
 // src/components/QuoteDisplay.jsx
-<<<<<<< HEAD
 import { useState, useEffect } from 'react';
 import { getRandomQuote, getDailyQuote } from '../data/quotes';
 
@@ -47,16 +46,16 @@ export function QuoteDisplay({ autoIntervalSeconds = 15 }) {
   };
 
   return (
-    <div 
+    <div
       className="quote-card"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
       {/* Auto-timer Progress Line */}
       <div className="quote-progress-track">
-        <div 
-          className="quote-progress-bar" 
-          style={{ width: `${progress}%` }} 
+        <div
+          className="quote-progress-bar"
+          style={{ width: `${progress}%` }}
         />
       </div>
 
@@ -71,49 +70,23 @@ export function QuoteDisplay({ autoIntervalSeconds = 15 }) {
         </span>
 
         <div style={{ display: 'flex', gap: '6px' }}>
-          <button 
-            type="button" 
-            onClick={togglePause} 
+          <button
+            type="button"
+            onClick={togglePause}
             className="quote-btn-pill"
             title={isPaused ? "Resume auto-changing quotes" : "Pause on this quote"}
           >
             {isPaused ? '▶️ Resume' : '⏸️ Pause'}
           </button>
-          <button 
-            type="button" 
-            onClick={handleNextQuote} 
+          <button
+            type="button"
+            onClick={handleNextQuote}
             className="quote-btn-pill"
             title="Next quote now"
           >
             ✨ Next Quote
           </button>
         </div>
-=======
-import { useState } from 'react';
-import { getDailyQuote, getRandomQuote } from '../data/quotes';
-
-export function QuoteDisplay() {
-  const [quote, setQuote] = useState(() => getDailyQuote());
-
-  const handleNextQuote = () => {
-    setQuote(getRandomQuote());
-  };
-
-  return (
-    <div className="quote-card">
-      <p className="quote-text">"{quote.text}"</p>
-      <p className="quote-author">— {quote.author}</p>
-      <div className="quote-actions">
-        <span className="quote-badge">{quote.category}</span>
-        <button 
-          type="button" 
-          onClick={handleNextQuote} 
-          className="quote-refresh-btn"
-          title="Show another quote"
-        >
-          ✨ Refresh Quote
-        </button>
->>>>>>> ae2b701c0a8b9bf3ebc112e8ac3556b04166f003
       </div>
     </div>
   );

@@ -4,10 +4,7 @@ import { useAuth } from './hooks/useAuth';
 import { useDailyTasks } from './hooks/useDailyTasks';
 import { useDuratedTasks } from './hooks/useDuratedTasks';
 import { useStreak } from './hooks/useStreak';
-<<<<<<< HEAD
 import { useFocusTimer } from './hooks/useFocusTimer';
-=======
->>>>>>> ae2b701c0a8b9bf3ebc112e8ac3556b04166f003
 
 import { LoginScreen } from './screens/LoginScreen';
 import { RegisterScreen } from './screens/RegisterScreen';
@@ -22,7 +19,6 @@ function App() {
   const [authView, setAuthView] = useState('login'); // 'login' | 'register'
   const [activeScreen, setActiveScreen] = useState('dashboard'); // 'dashboard' | 'focus' | 'progress' | 'streaks'
 
-<<<<<<< HEAD
   // Persistent Timer Hook (ticks in background across tab changes)
   const timerState = useFocusTimer();
 
@@ -46,28 +42,6 @@ function App() {
     completeDuratedTask,
   } = useDuratedTasks(user?.id, refreshStats);
 
-=======
-  // Hooks for logged in user data
-  const {
-    streakData,
-    progressData,
-    refreshStats,
-  } = useStreak(user?.id);
-
-  const {
-    tasks: dailyTasks,
-    addTask: addDailyTask,
-    toggleTask: toggleDailyTask,
-    deleteTask: deleteDailyTask,
-  } = useDailyTasks(user?.id, refreshStats);
-
-  const {
-    tasks: duratedTasks,
-    addDuratedTask,
-    completeDuratedTask,
-  } = useDuratedTasks(user?.id, refreshStats);
-
->>>>>>> ae2b701c0a8b9bf3ebc112e8ac3556b04166f003
   // ── Unauthenticated Flow ──
   if (!isAuthenticated) {
     return (
@@ -93,23 +67,20 @@ function App() {
       {/* Top App Header */}
       <header className="app-header">
         <div className="app-brand">
-          <span>⚡</span>
+          <span>📚</span>
           <span>Micro-Kanban</span>
         </div>
 
         <div className="user-badge">
-<<<<<<< HEAD
           {timerState.isRunning && (
-            <span 
-              className="header-timer-badge" 
+            <span
+              className="header-timer-badge"
               onClick={() => setActiveScreen('focus')}
               title="Click to view running timer"
             >
               ⏱️ {Math.floor(timerState.timeLeft / 60)}:{String(timerState.timeLeft % 60).padStart(2, '0')}
             </span>
           )}
-=======
->>>>>>> ae2b701c0a8b9bf3ebc112e8ac3556b04166f003
           <span>{user?.name}</span>
           <button
             type="button"
@@ -140,11 +111,7 @@ function App() {
         {activeScreen === 'focus' && (
           <FocusScreen
             dailyTasks={dailyTasks}
-<<<<<<< HEAD
             timerState={timerState}
-=======
-            onTaskCompleted={refreshStats}
->>>>>>> ae2b701c0a8b9bf3ebc112e8ac3556b04166f003
           />
         )}
 
