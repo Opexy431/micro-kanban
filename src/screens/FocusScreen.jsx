@@ -1,4 +1,5 @@
 // src/screens/FocusScreen.jsx
+<<<<<<< HEAD
 import { useState } from 'react';
 
 export function FocusScreen({
@@ -20,6 +21,53 @@ export function FocusScreen({
 
   const [customInput, setCustomInput] = useState('');
   const [showCustomModal, setShowCustomModal] = useState(false);
+=======
+import { useState, useEffect, useRef } from 'react';
+
+export function FocusScreen({ dailyTasks, onTaskCompleted }) {
+  const DEFAULT_FOCUS_TIME = 25 * 60; // 25 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(DEFAULT_FOCUS_TIME);
+  const [isRunning, setIsRunning] = useState(false);
+  const [mode, setMode] = useState('focus'); // 'focus' | 'shortBreak'
+  const [selectedTaskId, setSelectedTaskId] = useState('');
+  const timerRef = useRef(null);
+
+  useEffect(() => {
+    if (isRunning) {
+      timerRef.current = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(timerRef.current);
+            setIsRunning(false);
+            // Handle timer finish
+            alert(mode === 'focus' ? '🎉 Focus session finished! Take a break.' : '⏰ Break is over! Ready to focus?');
+            return mode === 'focus' ? 5 * 60 : DEFAULT_FOCUS_TIME;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else {
+      clearInterval(timerRef.current);
+    }
+
+    return () => clearInterval(timerRef.current);
+  }, [isRunning, mode]);
+
+  const togglePlay = () => {
+    setIsRunning((prev) => !prev);
+  };
+
+  const resetTimer = () => {
+    setIsRunning(false);
+    setTimeLeft(mode === 'focus' ? DEFAULT_FOCUS_TIME : 5 * 60);
+  };
+
+  const switchMode = (newMode) => {
+    setIsRunning(false);
+    setMode(newMode);
+    setTimeLeft(newMode === 'focus' ? DEFAULT_FOCUS_TIME : 5 * 60);
+  };
+>>>>>>> ae2b701c0a8b9bf3ebc112e8ac3556b04166f003
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -27,6 +75,7 @@ export function FocusScreen({
     return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   };
 
+<<<<<<< HEAD
   const handleCustomSubmit = (e) => {
     e.preventDefault();
     const mins = parseInt(customInput, 10);
@@ -54,11 +103,36 @@ export function FocusScreen({
           type="button"
           className={`btn-preset ${mode === 'focus' && durationMinutes === 25 ? 'active' : ''}`}
           onClick={() => setPreset('focus', 25)}
+=======
+  return (
+    <div className="focus-container">
+      <div style={{ marginBottom: '20px' }}>
+        <h2 style={{ fontSize: '1.4rem', marginBottom: '4px' }}>Deep Focus Timer</h2>
+        <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>
+          Eliminate distractions and build momentum
+        </p>
+      </div>
+
+      {/* Mode Selector */}
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
+        <button
+          type="button"
+          className="btn"
+          style={{
+            backgroundColor: mode === 'focus' ? 'var(--color-primary)' : 'var(--color-bg)',
+            color: mode === 'focus' ? '#fff' : 'var(--color-text-muted)',
+            border: '1px solid var(--color-border)',
+            padding: '6px 14px',
+            fontSize: '0.8rem',
+          }}
+          onClick={() => switchMode('focus')}
+>>>>>>> ae2b701c0a8b9bf3ebc112e8ac3556b04166f003
         >
           25m Focus
         </button>
         <button
           type="button"
+<<<<<<< HEAD
           className={`btn-preset ${mode === 'focus' && durationMinutes === 45 ? 'active' : ''}`}
           onClick={() => setPreset('focus', 45)}
         >
@@ -156,27 +230,60 @@ export function FocusScreen({
             {durationMinutes} min total
           </span>
         </div>
+=======
+          className="btn"
+          style={{
+            backgroundColor: mode === 'shortBreak' ? 'var(--color-primary)' : 'var(--color-bg)',
+            color: mode === 'shortBreak' ? '#fff' : 'var(--color-text-muted)',
+            border: '1px solid var(--color-border)',
+            padding: '6px 14px',
+            fontSize: '0.8rem',
+          }}
+          onClick={() => switchMode('shortBreak')}
+        >
+          5m Break
+        </button>
+      </div>
+
+      {/* Timer Circle */}
+      <div className="timer-circle">
+        <span className="timer-digits">{formatTime(timeLeft)}</span>
+        <span className="timer-label">{mode === 'focus' ? 'Focusing' : 'Short Break'}</span>
+>>>>>>> ae2b701c0a8b9bf3ebc112e8ac3556b04166f003
       </div>
 
       {/* Linked Task Selector */}
       {dailyTasks && dailyTasks.length > 0 && (
+<<<<<<< HEAD
         <div style={{ width: '100%', maxWidth: '340px', marginBottom: '22px' }}>
           <label className="form-label" style={{ textAlign: 'left' }}>📌 Attach session to today's task:</label>
+=======
+        <div style={{ width: '100%', maxWidth: '320px', marginBottom: '20px' }}>
+          <label className="form-label" style={{ textAlign: 'left' }}>Focus on specific task:</label>
+>>>>>>> ae2b701c0a8b9bf3ebc112e8ac3556b04166f003
           <select
             className="form-select"
             value={selectedTaskId}
             onChange={(e) => setSelectedTaskId(e.target.value)}
           >
+<<<<<<< HEAD
             <option value="">-- General Study / Open Session --</option>
             {dailyTasks.map((t) => (
               <option key={t.id} value={t.id}>
                 {t.title} {t.status === 'completed' ? '✓ (Completed)' : ''}
+=======
+            <option value="">-- General Study Session --</option>
+            {dailyTasks.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.title} {t.status === 'completed' ? '(Done)' : ''}
+>>>>>>> ae2b701c0a8b9bf3ebc112e8ac3556b04166f003
               </option>
             ))}
           </select>
         </div>
       )}
 
+<<<<<<< HEAD
       {/* Tactile Timer Buttons */}
       <div className="timer-controls">
         <button
@@ -191,6 +298,23 @@ export function FocusScreen({
           className="btn-timer-action btn-timer-secondary"
           onClick={resetTimer}
           title="Reset timer to start"
+=======
+      {/* Controls */}
+      <div className="timer-controls">
+        <button
+          type="button"
+          className="btn btn-primary"
+          style={{ padding: '12px 28px', fontSize: '1rem' }}
+          onClick={togglePlay}
+        >
+          {isRunning ? '⏸️ Pause' : '▶️ Start'}
+        </button>
+        <button
+          type="button"
+          className="btn"
+          style={{ backgroundColor: 'var(--color-bg)', border: '1px solid var(--color-border)', padding: '12px 20px' }}
+          onClick={resetTimer}
+>>>>>>> ae2b701c0a8b9bf3ebc112e8ac3556b04166f003
         >
           🔄 Reset
         </button>
