@@ -1,9 +1,14 @@
 // src/screens/FocusScreen.jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { api } from '../api/client';
 
 export function FocusScreen({
   dailyTasks,
   timerState,
+  user,
+  toggleDailyTask,
+  sessionCompleteInfo,
+  setSessionCompleteInfo
 }) {
   const {
     timeLeft,
@@ -20,6 +25,34 @@ export function FocusScreen({
 
   const [customInput, setCustomInput] = useState('');
   const [showCustomModal, setShowCustomModal] = useState(false);
+  const [isLoggingSession, setIsLoggingSession] = useState(false);
+
+  // Effect to automatically log session when it pops up
+  useEffect(() => {
+    if (sessionCompleteInfo && user?.id && !isLoggingSession) {
+      setIsLoggingSession(true);
+      api.focusSessions.log(
+        user.id,
+        sessionCompleteInfo.selectedTaskId,
+        sessionCompleteInfo.durationMinutes
+      ).catch(err => {
+        console.error("Failed to log focus session to DB", err);
+      }).finally(() => {
+        setIsLoggingSession(false);
+      });
+    }
+  }, [sessionCompleteInfo, user]);
+
+  const handleModalClose = () => {
+    setSessionCompleteInfo(null);
+  };
+
+  const handleModalCompleteTask = async () => {
+    if (sessionCompleteInfo?.selectedTaskId) {
+      await toggleDailyTask(parseInt(sessionCompleteInfo.selectedTaskId, 10));
+    }
+    setSessionCompleteInfo(null);
+  };
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -39,8 +72,40 @@ export function FocusScreen({
 
   const progressPercent = Math.max(0, Math.min(100, ((durationMinutes * 60 - timeLeft) / (durationMinutes * 60)) * 100));
 
+  // Find linked task if any
+  const linkedTask = sessionCompleteInfo?.selectedTaskId 
+    ? dailyTasks?.find(t => t.id === parseInt(sessionCompleteInfo.selectedTaskId, 10))
+    : null;
+
   return (
     <div className="focus-container">
+      {/* Session Complete Modal */}
+      {sessionCompleteInfo && (
+        <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div className="card" style={{ width: '90%', maxWidth: '400px', backgroundColor: 'var(--color-bg)' }}>
+            <h3 style={{ marginTop: 0 }}>🎉 Focus Session Complete!</h3>
+            <p>Great job! You stayed focused for {sessionCompleteInfo.durationMinutes} minutes.</p>
+            
+            {linkedTask && linkedTask.status !== 'completed' ? (
+              <div style={{ marginTop: '20px', padding: '15px', backgroundColor: 'var(--color-surface)', borderRadius: '8px' }}>
+                <p style={{ margin: '0 0 15px 0' }}>Did you finish <strong>{linkedTask.title}</strong>?</p>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleModalCompleteTask}>
+                    Yes, mark complete!
+                  </button>
+                  <button className="btn btn-secondary" style={{ flex: 1 }} onClick={handleModalClose}>
+                    Keep going
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end' }}>
+                <button className="btn btn-primary" onClick={handleModalClose}>Awesome</button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       <div style={{ marginBottom: '18px' }}>
         <h2 style={{ fontSize: '1.4rem', marginBottom: '4px' }}>Deep Focus Studio</h2>
         <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>

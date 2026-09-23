@@ -18,9 +18,19 @@ function App() {
   const { user, isAuthenticated, login, register, logout } = useAuth();
   const [authView, setAuthView] = useState('login'); // 'login' | 'register'
   const [activeScreen, setActiveScreen] = useState('dashboard'); // 'dashboard' | 'focus' | 'progress' | 'streaks'
+  const [sessionCompleteInfo, setSessionCompleteInfo] = useState(null);
+
+  const handleSessionComplete = (info) => {
+    if (info.mode.includes('Break')) {
+      alert('⏰ Break is over! Ready to focus?');
+    } else {
+      setSessionCompleteInfo(info);
+      setActiveScreen('focus'); // Switch to focus screen so they see the modal
+    }
+  };
 
   // Persistent Timer Hook (ticks in background across tab changes)
-  const timerState = useFocusTimer();
+  const timerState = useFocusTimer(handleSessionComplete);
 
   // Hooks for logged in user data
   const {
@@ -112,6 +122,10 @@ function App() {
           <FocusScreen
             dailyTasks={dailyTasks}
             timerState={timerState}
+            user={user}
+            toggleDailyTask={toggleDailyTask}
+            sessionCompleteInfo={sessionCompleteInfo}
+            setSessionCompleteInfo={setSessionCompleteInfo}
           />
         )}
 

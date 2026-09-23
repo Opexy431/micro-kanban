@@ -113,6 +113,19 @@ export const api = {
         method: 'GET',
       }),
   },
+
+  // ── FOCUS SESSIONS ──
+  focusSessions: {
+    log: (userId, taskId, durationMin) =>
+      request('/focus-sessions', {
+        method: 'POST',
+        body: JSON.stringify({
+          user_id: userId,
+          task_id: taskId || null,
+          duration_min: durationMin,
+        }),
+      }),
+  },
 };
 
 export default api;

@@ -1,13 +1,53 @@
 // src/hooks/useFocusTimer.js
 import { useState, useEffect, useRef } from 'react';
 
-export function useFocusTimer() {
-  const [durationMinutes, setDurationMinutes] = useState(25);
-  const [timeLeft, setTimeLeft] = useState(25 * 60);
-  const [isRunning, setIsRunning] = useState(false);
-  const [mode, setMode] = useState('focus'); // 'focus' | 'shortBreak' | 'longBreak' | 'custom'
-  const [selectedTaskId, setSelectedTaskId] = useState('');
+const STORAGE_KEY = 'mk_timer';
+
+export function useFocusTimer(onSessionComplete) {
+  // Initialize state from localStorage if available
+  const getInitialState = () => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        return {
+          durationMinutes: parsed.durationMinutes || 25,
+          timeLeft: parsed.timeLeft || 25 * 60,
+          mode: parsed.mode || 'focus',
+          selectedTaskId: parsed.selectedTaskId || '',
+          isRunning: false, // Always start paused on refresh
+        };
+      }
+    } catch (err) {
+      console.error("Failed to parse timer state", err);
+    }
+    return {
+      durationMinutes: 25,
+      timeLeft: 25 * 60,
+      mode: 'focus',
+      selectedTaskId: '',
+      isRunning: false,
+    };
+  };
+
+  const initialState = getInitialState();
+  
+  const [durationMinutes, setDurationMinutes] = useState(initialState.durationMinutes);
+  const [timeLeft, setTimeLeft] = useState(initialState.timeLeft);
+  const [isRunning, setIsRunning] = useState(initialState.isRunning);
+  const [mode, setMode] = useState(initialState.mode); // 'focus' | 'shortBreak' | 'longBreak' | 'custom'
+  const [selectedTaskId, setSelectedTaskId] = useState(initialState.selectedTaskId);
   const timerRef = useRef(null);
+
+  // Persist state to localStorage on every change
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      durationMinutes,
+      timeLeft,
+      mode,
+      selectedTaskId,
+    }));
+  }, [durationMinutes, timeLeft, mode, selectedTaskId]);
 
   useEffect(() => {
     if (isRunning) {
@@ -30,7 +70,11 @@ export function useFocusTimer() {
               // Ignore audio context errors
             }
 
-            alert(mode.includes('Break') ? '⏰ Break is over! Ready to focus?' : '🎉 Focus session completed! Great job!');
+            // Instead of raw alert, call the callback to handle DB logging & modal
+            if (onSessionComplete) {
+              onSessionComplete({ durationMinutes, selectedTaskId, mode });
+            }
+            
             return durationMinutes * 60;
           }
           return prev - 1;
@@ -41,7 +85,7 @@ export function useFocusTimer() {
     }
 
     return () => clearInterval(timerRef.current);
-  }, [isRunning, durationMinutes, mode]);
+  }, [isRunning, durationMinutes, mode, selectedTaskId, onSessionComplete]);
 
   const togglePlay = () => {
     setIsRunning((prev) => !prev);
@@ -50,6 +94,7 @@ export function useFocusTimer() {
   const resetTimer = () => {
     setIsRunning(false);
     setTimeLeft(durationMinutes * 60);
+    localStorage.removeItem(STORAGE_KEY);
   };
 
   const setPreset = (presetMode, minutes) => {
