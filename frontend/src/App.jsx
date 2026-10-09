@@ -78,6 +78,8 @@ function App() {
     );
   }
 
+  const firstName = user?.name ? user.name.trim().split(/\s+/)[0] : 'User';
+
   // ── Authenticated Flow ──
   return (
     <div className="app-container">
@@ -98,7 +100,7 @@ function App() {
               ⏱️ {Math.floor(timerState.timeLeft / 60)}:{String(timerState.timeLeft % 60).padStart(2, '0')}
             </span>
           )}
-          <span>{user?.name}</span>
+          <span className="user-name" title={user?.name}>{firstName}</span>
           <button
             type="button"
             className="btn-logout"
