@@ -9,6 +9,7 @@ import { useFocusTimer } from './hooks/useFocusTimer';
 import { LoginScreen } from './screens/LoginScreen';
 import { RegisterScreen } from './screens/RegisterScreen';
 import { DashboardScreen } from './screens/DashboardScreen';
+import { KanbanScreen } from './screens/KanbanScreen';
 import { FocusScreen } from './screens/FocusScreen';
 import { ProgressScreen } from './screens/ProgressScreen';
 import { StreakScreen } from './screens/StreakScreen';
@@ -43,8 +44,14 @@ function App() {
     tasks: dailyTasks,
     addTask: addDailyTask,
     toggleTask: toggleDailyTask,
+    updateTaskStatus: updateDailyTaskStatus,
     deleteTask: deleteDailyTask,
   } = useDailyTasks(user?.id, refreshStats);
+
+  const handleStartFocusFromKanban = (task) => {
+    timerState.setSelectedTaskId(task.id);
+    setActiveScreen('focus');
+  };
 
   const {
     tasks: duratedTasks,
@@ -115,6 +122,17 @@ function App() {
             onDeleteDailyTask={deleteDailyTask}
             onAddDuratedTask={addDuratedTask}
             onCompleteDuratedTask={completeDuratedTask}
+          />
+        )}
+
+        {activeScreen === 'kanban' && (
+          <KanbanScreen
+            dailyTasks={dailyTasks}
+            duratedTasks={duratedTasks}
+            onAddTask={addDailyTask}
+            onUpdateTaskStatus={updateDailyTaskStatus}
+            onDeleteTask={deleteDailyTask}
+            onStartFocus={handleStartFocusFromKanban}
           />
         )}
 

@@ -1,7 +1,8 @@
 // src/components/BottomNav.jsx
 export function BottomNav({ activeScreen, onSelectScreen }) {
   const navItems = [
-    { id: 'dashboard', label: 'Board', icon: '📋' },
+    { id: 'dashboard', label: 'Home', icon: '🏠' },
+    { id: 'kanban', label: 'Kanban', icon: '📋' },
     { id: 'focus', label: 'Focus', icon: '⏱️' },
     { id: 'progress', label: 'Progress', icon: '📊' },
     { id: 'streaks', label: 'Streaks', icon: '🔥' },

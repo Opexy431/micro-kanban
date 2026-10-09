@@ -1,7 +1,7 @@
-// src/api/client.js
 // Centralized API client communicating with the Flask backend
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+
 
 async function request(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
@@ -65,6 +65,12 @@ export const api = {
       request(`/daily-tasks/${taskId}`, {
         method: 'PUT',
         body: JSON.stringify({ user_id: userId }),
+      }),
+
+    updateStatus: (taskId, userId, status) =>
+      request(`/daily-tasks/${taskId}`, {
+        method: 'PUT',
+        body: JSON.stringify({ user_id: userId, status }),
       }),
 
     delete: (taskId, userId) =>

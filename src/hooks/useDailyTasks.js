@@ -54,6 +54,23 @@ export function useDailyTasks(userId, onTaskCompleted) {
     }
   };
 
+  const updateTaskStatus = async (taskId, newStatus) => {
+    if (!userId) return;
+    try {
+      const result = await api.dailyTasks.updateStatus(taskId, userId, newStatus);
+      setTasks((prev) =>
+        prev.map((t) => (t.id === taskId ? { ...t, status: result.status } : t))
+      );
+      if (result.status === 'completed' && onTaskCompleted) {
+        onTaskCompleted();
+      }
+      return result;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    }
+  };
+
   const deleteTask = async (taskId) => {
     if (!userId) return;
     try {
@@ -71,6 +88,7 @@ export function useDailyTasks(userId, onTaskCompleted) {
     error,
     addTask,
     toggleTask,
+    updateTaskStatus,
     deleteTask,
     refreshTasks: fetchTasks,
   };
