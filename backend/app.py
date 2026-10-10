@@ -5,19 +5,7 @@ from datetime import date, timedelta
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
-# ─────────────────────────────────────────────
-# app.py — Micro-Kanban Flask Backend
-#
-# Every route follows the same pattern:
-#   1. Validate the incoming data
-#   2. Open a DB connection
-#   3. Run the query
-#   4. Close the connection
-#   5. Return JSON
-#
-# Connections are always closed in a finally
-# block so they close even when errors occur.
-# ─────────────────────────────────────────────
+────────────────────────
 
 app = Flask(__name__)
 CORS(app)  # allows the React frontend (different port) to call this API
@@ -806,4 +794,4 @@ def health_check():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     is_debug = os.environ.get("FLASK_ENV", "development").lower() == "development"
-    app.run(host='0.0.0.0', port=port, debug=is_debug)
+    app.run(host='0.0.0.0', port=port, debug=is_debug)
