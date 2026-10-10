@@ -5,7 +5,7 @@ from datetime import date, timedelta
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
-────────────────────────
+# ------------------------
 
 app = Flask(__name__)
 CORS(app)  # allows the React frontend (different port) to call this API
@@ -14,9 +14,9 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 DB_PATH  = os.path.join(BASE_DIR, 'database.db')
 
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 # DB HELPER
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 
 def get_conn():
     """
@@ -31,9 +31,9 @@ def get_conn():
     return conn
 
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 # AUTH ROUTES
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 
 @app.route('/api/auth/register', methods=['POST'])
 def register():
@@ -50,7 +50,7 @@ def register():
     """
     data = request.get_json()
 
-    # ── Validate required fields ──
+    # -- Validate required fields --
     name     = data.get('name', '').strip()
     email    = data.get('email', '').strip().lower()
     password = data.get('password', '')
@@ -65,7 +65,7 @@ def register():
     if mode not in ('study', 'work', 'business', 'personal'):
         mode = 'study'  # safe default
 
-    # ── Hash the password ──
+    # -- Hash the password --
     # bcrypt.hashpw expects bytes, so we encode first.
     # The hash is decoded back to a string for DB storage.
     password_hash = bcrypt.hashpw(
@@ -146,9 +146,9 @@ def login():
         conn.close()
 
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 # DAILY TASKS ROUTES
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 
 @app.route('/api/daily-tasks', methods=['GET'])
 def get_daily_tasks():
@@ -268,7 +268,7 @@ def toggle_daily_task(task_id):
             WHERE id = ?
         ''', (new_status, task_id))
 
-        # ── Update streak for today ──
+        # -- Update streak for today --
         # Only adjust streak if completion state changed
         today = date.today().isoformat()
 
@@ -335,9 +335,9 @@ def delete_daily_task(task_id):
         conn.close()
 
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 # DURATED TASKS ROUTES
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 
 @app.route('/api/durated-tasks', methods=['GET'])
 def get_durated_tasks():
@@ -444,7 +444,7 @@ def add_durated_task():
     duration_days      = data.get('duration_days')
     definition_of_done = data.get('definition_of_done', '').strip() or None
 
-    # ── Validate ──
+    # -- Validate --
     if not user_id:
         return jsonify({"error": "user_id is required"}), 400
     if not title:
@@ -545,9 +545,9 @@ def complete_durated_task(task_id):
         conn.close()
 
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 # STREAKS ROUTE
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 
 @app.route('/api/streaks', methods=['GET'])
 def get_streaks():
@@ -587,7 +587,7 @@ def get_streaks():
             if row['tasks_completed'] > 0
         }
 
-        # ── Calculate current streak ──
+        # -- Calculate current streak --
         # Walk backwards from today, counting consecutive active days.
         current_streak = 0
         check_date     = date.today()
@@ -606,7 +606,7 @@ def get_streaks():
             else:
                 break
 
-        # ── Calculate longest streak ever ──
+        # -- Calculate longest streak ever --
         sorted_days    = sorted(active_days)
         longest_streak = 0
         run            = 0
@@ -621,7 +621,7 @@ def get_streaks():
             longest_streak = max(longest_streak, run)
             prev = current_day
 
-        # ── Today's count ──
+        # -- Today's count --
         today     = date.today().isoformat()
         today_row = conn.execute('''
             SELECT tasks_completed FROM streaks
@@ -641,9 +641,9 @@ def get_streaks():
         conn.close()
 
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 # PROGRESS ROUTE
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 
 @app.route('/api/progress', methods=['GET'])
 def get_progress():
@@ -656,7 +656,7 @@ def get_progress():
         weekly_total      — total tasks completed this week
         completion_rate   — % of all tasks completed (vs total created)
         daily_activity    — list of {date, day_label, count}
-                            for Mon–Sun of the current week
+# for Mon-Sun of the current week
         best_day          — the day with most completions this week
     """
     user_id = request.args.get('user_id')
@@ -664,7 +664,7 @@ def get_progress():
     if not user_id:
         return jsonify({"error": "user_id is required"}), 400
 
-    # ── Build Mon–Sun range for current week ──
+    # -- Build Mon-Sun range for current week --
     today      = date.today()
     # weekday() returns 0=Mon, 6=Sun
     week_start = today - timedelta(days=today.weekday())
@@ -708,7 +708,7 @@ def get_progress():
                 best_count = count
                 best_day   = day_labels[i]
 
-        # ── Completion rate ──
+        # -- Completion rate --
         # Total tasks created vs total completed
         total_created = conn.execute('''
             SELECT
@@ -742,9 +742,9 @@ def get_progress():
         conn.close()
 
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 # FOCUS SESSIONS ROUTES
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 
 @app.route('/api/focus-sessions', methods=['POST'])
 def log_focus_session():
@@ -787,9 +787,9 @@ def health_check():
     }), 200
 
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 # RUN
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))

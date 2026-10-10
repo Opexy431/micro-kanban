@@ -59,7 +59,7 @@ function App() {
     completeDuratedTask,
   } = useDuratedTasks(user?.id, refreshStats);
 
-  // ── Unauthenticated Flow ──
+  // -- Unauthenticated Flow --
   if (!isAuthenticated) {
     return (
       <div className="app-container">
@@ -80,7 +80,7 @@ function App() {
 
   const firstName = user?.name ? user.name.trim().split(/\s+/)[0] : 'User';
 
-  // ── Authenticated Flow ──
+  // -- Authenticated Flow --
   return (
     <div className="app-container">
       {/* Top App Header */}

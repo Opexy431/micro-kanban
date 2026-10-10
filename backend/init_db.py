@@ -2,7 +2,7 @@ import sqlite3
 import os
 from datetime import date
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 # init_db.py
 # Initialises the SQLite database for Micro-Kanban.
 # Run this ONCE before starting the Flask server:
@@ -11,7 +11,7 @@ from datetime import date
 # Safe to re-run — every table uses
 # CREATE TABLE IF NOT EXISTS so existing
 # data is never wiped.
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 DB_PATH  = os.path.join(BASE_DIR, 'database.db')
@@ -30,7 +30,7 @@ def init_database():
     conn   = get_connection()
     cursor = conn.cursor()
 
-    # ── 1. USERS ──────────────────────────────
+    # -- 1. USERS ------------------------------
     # Stores one row per registered student.
     # 'mode' is the onboarding answer (study / work / business / personal)
     # and will be used by the AI layer later.
@@ -47,7 +47,7 @@ def init_database():
         )
     ''')
 
-    # ── 2. DAILY TASKS ────────────────────────
+    # -- 2. DAILY TASKS ------------------------
     # Simple one-off tasks that live on the daily board.
     # status is binary: 'pending' | 'completed'
     # user_id links every task to the owner.
@@ -62,7 +62,7 @@ def init_database():
         )
     ''')
 
-    # ── 3. DURATED TASKS ─────────────────────
+    # -- 3. DURATED TASKS ---------------------
     # Goal-based tasks with a deadline.
     # 'duration_days' is how many days the student sets.
     # 'due_date'      is calculated: start_date + duration_days.
@@ -87,7 +87,7 @@ def init_database():
         )
     ''')
 
-    # ── 4. STREAKS ────────────────────────────
+    # -- 4. STREAKS ----------------------------
     # One row per user per calendar day they were active.
     # 'tasks_completed' counts how many tasks (daily OR durated)
     # they finished that day — used for the progress chart.
@@ -104,13 +104,13 @@ def init_database():
         )
     ''')
 
-    # ── 5. NOTIFICATIONS ──────────────────────
+    # -- 5. NOTIFICATIONS ----------------------
     # Stores scheduled reminders so Flask (or a background
     # worker) knows what to send and when.
     # 'type' values:
     #   'streak_reminder'   → daily nudge if no task done yet
     #   'durated_low'       → calm reminder, >50% time left
-    #   'durated_mid'       → moderate urgency, 20–50% left
+    #   'durated_mid'       → moderate urgency, 20-50% left
     #   'durated_high'      → urgent, <20% left
     #   'durated_final'     → due today
     #   'focus_end'         → timer finished
@@ -129,7 +129,7 @@ def init_database():
         )
     ''')
 
-    # ── 6. FOCUS SESSIONS ─────────────────────
+    # -- 6. FOCUS SESSIONS ---------------------
     # Records completed focus timer sessions.
     # 'task_id' is optional (can be a general session).
     cursor.execute('''
@@ -144,7 +144,7 @@ def init_database():
     ''')
 
 
-    # ── Seed data (only if users table is empty) ──
+    # -- Seed data (only if users table is empty) --
     # This gives you a working account to test with
     # immediately after running this script.
     # Password is stored as plain text HERE ONLY for

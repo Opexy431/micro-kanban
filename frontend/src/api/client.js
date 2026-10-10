@@ -33,7 +33,7 @@ async function request(endpoint, options = {}) {
 }
 
 export const api = {
-  // ── AUTH ──
+  // -- AUTH --
   auth: {
     register: (name, email, password, mode = 'study') =>
       request('/auth/register', {
@@ -48,7 +48,7 @@ export const api = {
       }),
   },
 
-  // ── DAILY TASKS ──
+  // -- DAILY TASKS --
   dailyTasks: {
     getAll: (userId) =>
       request(`/daily-tasks?user_id=${encodeURIComponent(userId)}`, {
@@ -79,7 +79,7 @@ export const api = {
       }),
   },
 
-  // ── DURATED TASKS ──
+  // -- DURATED TASKS --
   duratedTasks: {
     getAll: (userId) =>
       request(`/durated-tasks?user_id=${encodeURIComponent(userId)}`, {
@@ -104,7 +104,7 @@ export const api = {
       }),
   },
 
-  // ── STREAKS ──
+  // -- STREAKS --
   streaks: {
     get: (userId) =>
       request(`/streaks?user_id=${encodeURIComponent(userId)}`, {
@@ -112,7 +112,7 @@ export const api = {
       }),
   },
 
-  // ── PROGRESS ──
+  // -- PROGRESS --
   progress: {
     get: (userId) =>
       request(`/progress?user_id=${encodeURIComponent(userId)}`, {
@@ -120,7 +120,7 @@ export const api = {
       }),
   },
 
-  // ── FOCUS SESSIONS ──
+  // -- FOCUS SESSIONS --
   focusSessions: {
     log: (userId, taskId, durationMin) =>
       request('/focus-sessions', {
